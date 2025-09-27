@@ -1,0 +1,167 @@
+{
+  "HomePage": {
+    "title": "ヘルスケアコミュニティプラットフォーム",
+    "settings": "設定",
+    "login": "ログイン",
+    "hero": {
+      "title": "世界中のヘルスケアコミュニティを繋ぐ",
+      "description": "患者、介護者、医療従事者が経験を共有し、健康データを追跡し、研究に参加するための多言語プラットフォームです。",
+      "getStarted": "始める",
+      "learnMore": "詳細を見る"
+    },
+    "features": {
+      "title": "包括的なヘルスケア機能",
+      "description": "健康の旅路を管理し、他の人々と繋がるために必要なすべての機能を提供します。",
+      "healthTracking": {
+        "title": "健康追跡",
+        "description": "多言語サポートで症状、薬物、バイタルサインを追跡します。"
+      },
+      "community": {
+        "title": "コミュニティサポート",
+        "description": "世界中の患者、介護者、医療従事者と繋がります。"
+      },
+      "research": {
+        "title": "研究参加",
+        "description": "臨床試験に参加し、医学研究に貢献します。"
+      },
+      "internationalization": {
+        "title": "グローバルアクセシビリティ",
+        "description": "13言語で利用可能で、地域別フォーマットと文化的適応を提供します。"
+      }
+    },
+    "stats": {
+      "title": "プラットフォーム統計",
+      "description": "世界中のヘルスケアコミュニティをサポート",
+      "languages": "13",
+      "languagesLabel": "対応言語",
+      "countries": "15",
+      "countriesLabel": "国・地域",
+      "features": "50+",
+      "featuresLabel": "ヘルスケア機能"
+    },
+    "footer": {
+      "product": "製品",
+      "features": "機能",
+      "pricing": "料金",
+      "support": "サポート",
+      "help": "ヘルプセンター",
+      "contact": "お問い合わせ",
+      "company": "会社",
+      "about": "私たちについて",
+      "privacy": "プライバシーポリシー",
+      "language": "言語",
+      "copyright": "© 2024 ヘルスケアコミュニティプラットフォーム。全著作権所有。"
+    }
+  },
+  "Navigation": {
+    "home": "ホーム",
+    "health": "健康",
+    "community": "コミュニティ",
+    "research": "研究",
+    "settings": "設定",
+    "profile": "プロフィール",
+    "logout": "ログアウト"
+  },
+  "Health": {
+    "title": "健康追跡",
+    "journals": "健康日記",
+    "medications": "薬物",
+    "symptoms": "症状",
+    "vitals": "バイタルサイン",
+    "reports": "健康レポート",
+    "addJournal": "日記を追加",
+    "addMedication": "薬物を追加",
+    "trackSymptom": "症状を追跡",
+    "recordVitals": "バイタルを記録"
+  },
+  "Community": {
+    "title": "コミュニティ",
+    "groups": "グループ",
+    "posts": "投稿",
+    "discussions": "ディスカッション",
+    "support": "サポートグループ",
+    "createPost": "投稿を作成",
+    "joinGroup": "グループに参加",
+    "startDiscussion": "ディスカッションを開始"
+  },
+  "Research": {
+    "title": "研究",
+    "trials": "臨床試験",
+    "studies": "研究調査",
+    "participation": "参加",
+    "eligibility": "適格性チェック",
+    "findTrials": "試験を検索",
+    "applyTrial": "試験に応募"
+  },
+  "Settings": {
+    "title": "設定",
+    "profile": "プロフィール設定",
+    "language": "言語",
+    "timezone": "タイムゾーン",
+    "notifications": "通知",
+    "privacy": "プライバシー",
+    "account": "アカウント",
+    "preferences": "設定"
+  },
+  "Common": {
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "create": "作成",
+    "update": "更新",
+    "search": "検索",
+    "filter": "フィルター",
+    "sort": "並び替え",
+    "loading": "読み込み中...",
+    "error": "エラー",
+    "success": "成功",
+    "warning": "警告",
+    "info": "情報",
+    "confirm": "確認",
+    "yes": "はい",
+    "no": "いいえ",
+    "close": "閉じる",
+    "back": "戻る",
+    "next": "次へ",
+    "previous": "前へ",
+    "submit": "送信",
+    "reset": "リセット",
+    "clear": "クリア",
+    "select": "選択",
+    "choose": "選択",
+    "upload": "アップロード",
+    "download": "ダウンロード",
+    "print": "印刷",
+    "share": "共有",
+    "copy": "コピー",
+    "paste": "貼り付け",
+    "cut": "切り取り",
+    "undo": "元に戻す",
+    "redo": "やり直し"
+  },
+  "Validation": {
+    "required": "この項目は必須です",
+    "invalidEmail": "有効なメールアドレスを入力してください",
+    "invalidPhone": "有効な電話番号を入力してください",
+    "invalidDate": "有効な日付を入力してください",
+    "invalidNumber": "有効な数値を入力してください",
+    "tooShort": "この項目は短すぎます",
+    "tooLong": "この項目は長すぎます",
+    "passwordMismatch": "パスワードが一致しません",
+    "invalidFormat": "無効な形式です",
+    "outOfRange": "値が範囲外です",
+    "duplicate": "この値は既に存在します"
+  },
+  "Error": {
+    "notFound": "リソースが見つかりません",
+    "unauthorized": "認証が必要です",
+    "forbidden": "アクセスが禁止されています",
+    "serverError": "サーバー内部エラー",
+    "networkError": "ネットワーク接続エラー",
+    "timeout": "リクエストタイムアウト",
+    "validationError": "データ検証エラー",
+    "duplicateError": "重複リソースエラー",
+    "genericError": "エラーが発生しました。もう一度お試しください。"
+  }
+}
