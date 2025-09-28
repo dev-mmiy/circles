@@ -12,7 +12,7 @@ from auth_service import AuthService
 from auth_models import UserProfile
 
 # 開発環境用の認証スルー設定
-DEV_AUTH_BYPASS = os.getenv("DEV_AUTH_BYPASS", "false").lower() == "true"
+DEV_AUTH_BYPASS = False  # 認証スルー機能を無効化
 
 
 class AuthMiddleware:

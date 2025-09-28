@@ -41,12 +41,25 @@ export default function HomePage() {
   const loadPosts = async () => {
     try {
       setLoading(true)
-      const response = await fetch('http://localhost:8001/api/posts')
+      const response = await fetch('http://localhost:8001/posts')
       if (!response.ok) {
         throw new Error('Failed to load posts')
       }
       const postsData = await response.json()
-      setPosts(postsData)
+      
+      // APIレスポンスが配列でない場合の処理
+      if (Array.isArray(postsData)) {
+        setPosts(postsData)
+      } else {
+        // 認証が必要な場合やエラーメッセージの場合
+        console.log('API Response:', postsData)
+        setPosts([])
+        if (postsData.message && postsData.message.includes('Authentication')) {
+          setError('認証が必要です。ログインしてください。')
+        } else {
+          setError('投稿の読み込みに失敗しました。')
+        }
+      }
       setError(null)
     } catch (err) {
       setError(t('api.error'))
@@ -60,7 +73,7 @@ export default function HomePage() {
     e.preventDefault()
     try {
       setCreating(true)
-      const response = await fetch('http://localhost:8001/api/posts', {
+      const response = await fetch('http://localhost:8001/posts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -69,11 +82,21 @@ export default function HomePage() {
       })
       
       if (!response.ok) {
-        throw new Error('Failed to create post')
+        const errorData = await response.json()
+        if (errorData.message && errorData.message.includes('Authentication')) {
+          setError('認証が必要です。ログインしてください。')
+        } else {
+          throw new Error('Failed to create post')
+        }
+        return
       }
       
       const createdPost = await response.json()
-      setPosts([createdPost, ...posts])
+      if (Array.isArray(createdPost)) {
+        setPosts([...createdPost, ...posts])
+      } else {
+        setPosts([createdPost, ...posts])
+      }
       setNewPost({ title: '', content: '', group_id: 1 })
       setShowCreateForm(false)
       setError(null)
@@ -136,6 +159,18 @@ export default function HomePage() {
                 </button>
               </div>
               
+              <button 
+                onClick={() => router.push(`/${locale}/auth/login`)}
+                className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+              >
+                ログイン
+              </button>
+              <button 
+                onClick={() => router.push(`/${locale}/auth/register`)}
+                className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700"
+              >
+                登録
+              </button>
               <button 
                 onClick={() => setShowCreateForm(!showCreateForm)}
                 className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"

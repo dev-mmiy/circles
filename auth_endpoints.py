@@ -225,6 +225,6 @@ async def auth_health_check():
             "login": True,
             "token_refresh": True,
             "profile_management": True,
-            "dev_bypass": os.getenv("DEV_AUTH_BYPASS", "false").lower() == "true"
+            "dev_bypass": False  # 認証スルー機能を無効化
         }
     }
