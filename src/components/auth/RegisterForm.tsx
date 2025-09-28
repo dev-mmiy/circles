@@ -107,153 +107,152 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
           </div>
         )}
           
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-                {t('register.firstName')}
-              </label>
-              <input
-                id="firstName"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleInputChange}
-                placeholder={t('register.firstNamePlaceholder')}
-                disabled={isLoading}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-                {t('register.lastName')}
-              </label>
-              <input
-                id="lastName"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                placeholder={t('register.lastNamePlaceholder')}
-                disabled={isLoading}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-              />
-            </div>
-          </div>
-          
+        <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              {t('register.email')}
+            <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+              {t('register.firstName')}
             </label>
             <input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
+              id="firstName"
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleInputChange}
+              placeholder={t('register.firstNamePlaceholder')}
+              disabled={isLoading}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+              {t('register.lastName')}
+            </label>
+            <input
+              id="lastName"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleInputChange}
+              placeholder={t('register.lastNamePlaceholder')}
+              disabled={isLoading}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+            />
+          </div>
+        </div>
+        
+        <div className="space-y-2">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            {t('register.email')}
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            required
+            placeholder={t('register.emailPlaceholder')}
+            disabled={isLoading}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <label htmlFor="nickname" className="block text-sm font-medium text-gray-700">
+            {t('register.nickname')}
+          </label>
+          <input
+            id="nickname"
+            name="nickname"
+            value={formData.nickname}
+            onChange={handleInputChange}
+            placeholder={t('register.nicknamePlaceholder')}
+            disabled={isLoading}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <label htmlFor="primaryCondition" className="block text-sm font-medium text-gray-700">
+            {t('register.primaryCondition')}
+          </label>
+          <input
+            id="primaryCondition"
+            name="primaryCondition"
+            value={formData.primaryCondition}
+            onChange={handleInputChange}
+            placeholder={t('register.primaryConditionPlaceholder')}
+            disabled={isLoading}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            {t('register.password')}
+          </label>
+          <div className="relative">
+            <input
+              id="password"
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              value={formData.password}
               onChange={handleInputChange}
               required
-              placeholder={t('register.emailPlaceholder')}
+              placeholder={t('register.passwordPlaceholder')}
               disabled={isLoading}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
             />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="nickname" className="block text-sm font-medium text-gray-700">
-              {t('register.nickname')}
-            </label>
-            <input
-              id="nickname"
-              name="nickname"
-              value={formData.nickname}
-              onChange={handleInputChange}
-              placeholder={t('register.nicknamePlaceholder')}
+            <button
+              type="button"
+              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-gray-100 rounded-r-md"
+              onClick={() => setShowPassword(!showPassword)}
               disabled={isLoading}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-            />
+            >
+              {showPassword ? '🙈' : '👁️'}
+            </button>
           </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="primaryCondition" className="block text-sm font-medium text-gray-700">
-              {t('register.primaryCondition')}
-            </label>
-            <input
-              id="primaryCondition"
-              name="primaryCondition"
-              value={formData.primaryCondition}
-              onChange={handleInputChange}
-              placeholder={t('register.primaryConditionPlaceholder')}
-              disabled={isLoading}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              {t('register.password')}
-            </label>
-            <div className="relative">
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                value={formData.password}
-                onChange={handleInputChange}
-                required
-                placeholder={t('register.passwordPlaceholder')}
-                disabled={isLoading}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-              />
-              <button
-                type="button"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-gray-100 rounded-r-md"
-                onClick={() => setShowPassword(!showPassword)}
-                disabled={isLoading}
-              >
-                {showPassword ? '🙈' : '👁️'}
-              </button>
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-              {t('register.confirmPassword')}
-            </label>
-            <div className="relative">
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type={showConfirmPassword ? 'text' : 'password'}
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                required
-                placeholder={t('register.confirmPasswordPlaceholder')}
-                disabled={isLoading}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-              />
-              <button
-                type="button"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-gray-100 rounded-r-md"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                disabled={isLoading}
-              >
-                {showConfirmPassword ? '🙈' : '👁️'}
-              </button>
-            </div>
-          </div>
-          
-          <button 
-            type="submit" 
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isLoading}
-          >
-            {isLoading ? '登録中...' : t('register.submit')}
-          </button>
-        </form>
-        
-        <div className="mt-4 text-center text-sm">
-          {t('register.haveAccount')}{' '}
-          <a href="/auth/login" className="text-blue-600 hover:underline">
-            {t('register.loginLink')}
-          </a>
         </div>
+        
+        <div className="space-y-2">
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+            {t('register.confirmPassword')}
+          </label>
+          <div className="relative">
+            <input
+              id="confirmPassword"
+              name="confirmPassword"
+              type={showConfirmPassword ? 'text' : 'password'}
+              value={formData.confirmPassword}
+              onChange={handleInputChange}
+              required
+              placeholder={t('register.confirmPasswordPlaceholder')}
+              disabled={isLoading}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+            />
+            <button
+              type="button"
+              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-gray-100 rounded-r-md"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              disabled={isLoading}
+            >
+              {showConfirmPassword ? '🙈' : '👁️'}
+            </button>
+          </div>
+        </div>
+        
+        <button 
+          type="submit" 
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isLoading}
+        >
+          {isLoading ? '登録中...' : t('register.submit')}
+        </button>
+      </form>
+      
+      <div className="mt-4 text-center text-sm">
+        {t('register.haveAccount')}{' '}
+        <a href="/auth/login" className="text-blue-600 hover:underline">
+          {t('register.loginLink')}
+        </a>
       </div>
     </div>
   );
