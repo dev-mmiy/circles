@@ -73,5 +73,47 @@
     "privacy": "プライバシーポリシー",
     "terms": "利用規約",
     "contact": "お問い合わせ"
+  },
+  "auth": {
+    "login": {
+      "title": "ログイン",
+      "description": "アカウントにサインインしてください",
+      "email": "メールアドレス",
+      "emailPlaceholder": "メールアドレスを入力してください",
+      "password": "パスワード",
+      "passwordPlaceholder": "パスワードを入力してください",
+      "rememberMe": "ログイン状態を保持する",
+      "submit": "ログイン",
+      "forgotPassword": "パスワードを忘れましたか？",
+      "noAccount": "アカウントをお持ちでない場合",
+      "registerLink": "新規登録",
+      "loginError": "ログインに失敗しました。メールアドレスとパスワードを確認してください。"
+    },
+    "register": {
+      "title": "新規登録",
+      "description": "新しいアカウントを作成してください",
+      "firstName": "名",
+      "firstNamePlaceholder": "名を入力してください",
+      "lastName": "姓",
+      "lastNamePlaceholder": "姓を入力してください",
+      "email": "メールアドレス",
+      "emailPlaceholder": "メールアドレスを入力してください",
+      "nickname": "ニックネーム",
+      "nicknamePlaceholder": "ニックネームを入力してください",
+      "primaryCondition": "主な疾患",
+      "primaryConditionPlaceholder": "主な疾患を入力してください",
+      "password": "パスワード",
+      "passwordPlaceholder": "パスワードを入力してください",
+      "confirmPassword": "パスワード確認",
+      "confirmPasswordPlaceholder": "パスワードを再入力してください",
+      "submit": "登録",
+      "haveAccount": "既にアカウントをお持ちの場合",
+      "loginLink": "ログイン",
+      "passwordMismatch": "パスワードが一致しません。",
+      "passwordMinLength": "パスワードは8文字以上で入力してください。",
+      "shareMedicalInfo": "医療情報の共有に同意する",
+      "loading": "登録中...",
+      "registerError": "登録に失敗しました。入力内容を確認してください。"
+    }
   }
 }
