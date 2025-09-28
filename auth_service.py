@@ -33,7 +33,7 @@ REFRESH_TOKEN_EXPIRE_DAYS = 30
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # 開発環境用の認証スルー設定
-DEV_AUTH_BYPASS = os.getenv("DEV_AUTH_BYPASS", "false").lower() == "true"
+DEV_AUTH_BYPASS = False  # 認証スルー機能を無効化
 DEV_USER_ID = int(os.getenv("DEV_USER_ID", "1"))
 
 
