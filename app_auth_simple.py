@@ -314,7 +314,7 @@ async def update_user_profile(
         
         # プロフィール情報を更新
         updated_user = {**current_user}
-        for field, value in profile_data.dict(exclude_unset=True).items():
+        for field, value in profile_data.model_dump(exclude_unset=True).items():
             if value is not None:
                 updated_user[field] = value
         
