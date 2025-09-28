@@ -3,12 +3,6 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Eye, EyeOff } from 'lucide-react';
 
 interface RegisterFormProps {
   onSuccess?: () => void;
@@ -100,47 +94,55 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle>{t('register.title')}</CardTitle>
-        <CardDescription>{t('register.description')}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+    <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">{t('register.title')}</h2>
+        <p className="text-gray-600">{t('register.description')}</p>
+      </div>
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            {error}
+          </div>
+        )}
           
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="firstName">{t('register.firstName')}</Label>
-              <Input
+              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+                {t('register.firstName')}
+              </label>
+              <input
                 id="firstName"
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleInputChange}
                 placeholder={t('register.firstNamePlaceholder')}
                 disabled={isLoading}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lastName">{t('register.lastName')}</Label>
-              <Input
+              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+                {t('register.lastName')}
+              </label>
+              <input
                 id="lastName"
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleInputChange}
                 placeholder={t('register.lastNamePlaceholder')}
                 disabled={isLoading}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
               />
             </div>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="email">{t('register.email')}</Label>
-            <Input
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              {t('register.email')}
+            </label>
+            <input
               id="email"
               name="email"
               type="email"
@@ -149,37 +151,46 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
               required
               placeholder={t('register.emailPlaceholder')}
               disabled={isLoading}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="nickname">{t('register.nickname')}</Label>
-            <Input
+            <label htmlFor="nickname" className="block text-sm font-medium text-gray-700">
+              {t('register.nickname')}
+            </label>
+            <input
               id="nickname"
               name="nickname"
               value={formData.nickname}
               onChange={handleInputChange}
               placeholder={t('register.nicknamePlaceholder')}
               disabled={isLoading}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="primaryCondition">{t('register.primaryCondition')}</Label>
-            <Input
+            <label htmlFor="primaryCondition" className="block text-sm font-medium text-gray-700">
+              {t('register.primaryCondition')}
+            </label>
+            <input
               id="primaryCondition"
               name="primaryCondition"
               value={formData.primaryCondition}
               onChange={handleInputChange}
               placeholder={t('register.primaryConditionPlaceholder')}
               disabled={isLoading}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="password">{t('register.password')}</Label>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              {t('register.password')}
+            </label>
             <div className="relative">
-              <Input
+              <input
                 id="password"
                 name="password"
                 type={showPassword ? 'text' : 'password'}
@@ -188,28 +199,25 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
                 required
                 placeholder={t('register.passwordPlaceholder')}
                 disabled={isLoading}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
               />
-              <Button
+              <button
                 type="button"
-                variant="ghost"
-                size="sm"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-gray-100 rounded-r-md"
                 onClick={() => setShowPassword(!showPassword)}
                 disabled={isLoading}
               >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </Button>
+                {showPassword ? '🙈' : '👁️'}
+              </button>
             </div>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">{t('register.confirmPassword')}</Label>
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              {t('register.confirmPassword')}
+            </label>
             <div className="relative">
-              <Input
+              <input
                 id="confirmPassword"
                 name="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
@@ -218,28 +226,26 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
                 required
                 placeholder={t('register.confirmPasswordPlaceholder')}
                 disabled={isLoading}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
               />
-              <Button
+              <button
                 type="button"
-                variant="ghost"
-                size="sm"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-gray-100 rounded-r-md"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 disabled={isLoading}
               >
-                {showConfirmPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </Button>
+                {showConfirmPassword ? '🙈' : '👁️'}
+              </button>
             </div>
           </div>
           
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {t('register.submit')}
-          </Button>
+          <button 
+            type="submit" 
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading}
+          >
+            {isLoading ? '登録中...' : t('register.submit')}
+          </button>
         </form>
         
         <div className="mt-4 text-center text-sm">
@@ -248,7 +254,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
             {t('register.loginLink')}
           </a>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
