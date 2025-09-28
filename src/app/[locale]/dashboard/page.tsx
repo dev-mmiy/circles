@@ -146,7 +146,10 @@ export default function DashboardPage() {
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">プロフィール</h3>
             <p className="text-gray-600 mb-4">プロフィールの編集</p>
-            <button className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700">
+            <button 
+              onClick={() => router.push('/ja-JP/profile')}
+              className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700"
+            >
               プロフィールを編集
             </button>
           </div>

@@ -4,7 +4,7 @@
 """
 
 import os
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, Header
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, create_engine, SQLModel
 from contextlib import asynccontextmanager
@@ -44,6 +44,15 @@ class AuthResponse(BaseModel):
     access_token: str
     refresh_token: str
     user: dict
+
+class UserProfileUpdate(BaseModel):
+    nickname: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    primary_condition: Optional[str] = None
+    language: Optional[str] = None
+    country: Optional[str] = None
+    timezone: Optional[str] = None
 
 def get_db() -> Session:
     """データベースセッション取得"""
@@ -274,6 +283,47 @@ async def login_user(login_data: UserLogin, db: Session = Depends(get_db)):
             )
         else:
             raise HTTPException(status_code=401, detail="Invalid credentials")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.put("/auth/profile")
+async def update_user_profile(
+    profile_data: UserProfileUpdate, 
+    db: Session = Depends(get_db),
+    authorization: str = Header(None)
+):
+    """ユーザープロフィール更新"""
+    try:
+        # 簡単な認証チェック（実際の実装ではJWTトークンを検証）
+        if not authorization or not authorization.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Authentication required")
+        
+        # 現在のユーザー情報を取得（実際の実装ではデータベースから取得）
+        current_user = {
+            "id": 1,
+            "email": "user@example.com",
+            "nickname": "User",
+            "first_name": "Test",
+            "last_name": "User",
+            "primary_condition": "Test Condition",
+            "language": "en-US",
+            "country": "US",
+            "timezone": "UTC",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # プロフィール情報を更新
+        updated_user = {**current_user}
+        for field, value in profile_data.dict(exclude_unset=True).items():
+            if value is not None:
+                updated_user[field] = value
+        
+        updated_user["updated_at"] = datetime.now(timezone.utc).isoformat()
+        
+        return {
+            "message": "Profile updated successfully",
+            "user": updated_user
+        }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

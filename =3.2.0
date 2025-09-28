@@ -1,0 +1,19 @@
+Collecting pytest-html
+  Downloading pytest_html-4.1.1-py3-none-any.whl.metadata (3.9 kB)
+Requirement already satisfied: jinja2>=3.0.0 in /home/miyasaka/source/python/mydjango/venv/lib/python3.9/site-packages (from pytest-html) (3.1.2)
+Collecting pytest-metadata>=2.0.0 (from pytest-html)
+  Downloading pytest_metadata-3.1.1-py3-none-any.whl.metadata (8.6 kB)
+Requirement already satisfied: pytest>=7.0.0 in /home/miyasaka/source/python/mydjango/venv/lib/python3.9/site-packages (from pytest-html) (8.4.2)
+Requirement already satisfied: MarkupSafe>=2.0 in /home/miyasaka/source/python/mydjango/venv/lib/python3.9/site-packages (from jinja2>=3.0.0->pytest-html) (2.1.3)
+Requirement already satisfied: exceptiongroup>=1 in /home/miyasaka/source/python/mydjango/venv/lib/python3.9/site-packages (from pytest>=7.0.0->pytest-html) (1.1.2)
+Requirement already satisfied: iniconfig>=1 in /home/miyasaka/source/python/mydjango/venv/lib/python3.9/site-packages (from pytest>=7.0.0->pytest-html) (2.1.0)
+Requirement already satisfied: packaging>=20 in /home/miyasaka/source/python/mydjango/venv/lib/python3.9/site-packages (from pytest>=7.0.0->pytest-html) (24.0)
+Requirement already satisfied: pluggy<2,>=1.5 in /home/miyasaka/source/python/mydjango/venv/lib/python3.9/site-packages (from pytest>=7.0.0->pytest-html) (1.6.0)
+Requirement already satisfied: pygments>=2.7.2 in /home/miyasaka/source/python/mydjango/venv/lib/python3.9/site-packages (from pytest>=7.0.0->pytest-html) (2.19.2)
+Requirement already satisfied: tomli>=1 in /home/miyasaka/source/python/mydjango/venv/lib/python3.9/site-packages (from pytest>=7.0.0->pytest-html) (2.2.1)
+Downloading pytest_html-4.1.1-py3-none-any.whl (23 kB)
+Downloading pytest_metadata-3.1.1-py3-none-any.whl (11 kB)
+Installing collected packages: pytest-metadata, pytest-html
+
+
+Successfully installed pytest-html-4.1.1 pytest-metadata-3.1.1

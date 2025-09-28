@@ -1,0 +1,12 @@
+Collecting pytest-timeout
+  Downloading pytest_timeout-2.4.0-py3-none-any.whl.metadata (20 kB)
+Requirement already satisfied: pytest>=7.0.0 in /home/miyasaka/source/python/mydjango/venv/lib/python3.9/site-packages (from pytest-timeout) (8.4.2)
+Requirement already satisfied: exceptiongroup>=1 in /home/miyasaka/source/python/mydjango/venv/lib/python3.9/site-packages (from pytest>=7.0.0->pytest-timeout) (1.1.2)
+Requirement already satisfied: iniconfig>=1 in /home/miyasaka/source/python/mydjango/venv/lib/python3.9/site-packages (from pytest>=7.0.0->pytest-timeout) (2.1.0)
+Requirement already satisfied: packaging>=20 in /home/miyasaka/source/python/mydjango/venv/lib/python3.9/site-packages (from pytest>=7.0.0->pytest-timeout) (24.0)
+Requirement already satisfied: pluggy<2,>=1.5 in /home/miyasaka/source/python/mydjango/venv/lib/python3.9/site-packages (from pytest>=7.0.0->pytest-timeout) (1.6.0)
+Requirement already satisfied: pygments>=2.7.2 in /home/miyasaka/source/python/mydjango/venv/lib/python3.9/site-packages (from pytest>=7.0.0->pytest-timeout) (2.19.2)
+Requirement already satisfied: tomli>=1 in /home/miyasaka/source/python/mydjango/venv/lib/python3.9/site-packages (from pytest>=7.0.0->pytest-timeout) (2.2.1)
+Downloading pytest_timeout-2.4.0-py3-none-any.whl (14 kB)
+Installing collected packages: pytest-timeout
+Successfully installed pytest-timeout-2.4.0
