@@ -6,6 +6,7 @@ FastAPI local dev stub for a rare-disease community MVP (no auth)
   * Medications + intake logs
   * Groups + Posts (basic community)
   * Reports (content moderation: report posts)
+  * Nutrition Management (meals, menus, nutrition tracking)
 - Notes:
   * No authentication. Treat all data as public in this stub.
   * CORS is open for http://localhost and http://127.0.0.1 for local dev.
@@ -28,6 +29,10 @@ from sqlmodel import SQLModel, Field as SQLField, Relationship, create_engine, S
 from fastapi import FastAPI, HTTPException, Depends, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+
+# 栄養管理機能のインポート
+from nutrition_endpoints import nutrition_router
+from nutrition_models import *
 
 # Set ORIGINS
 import os
@@ -282,6 +287,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 栄養管理ルーターを追加
+app.include_router(nutrition_router)
 
 
 @app.on_event("startup")

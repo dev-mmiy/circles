@@ -20,7 +20,7 @@ from auth_models import (
     Account, UserProfile, UserSession, MFAConfig, UserRoleAssignment,
     UserRegister, UserLogin, UserProfileUpdate, AuthResponse,
     TokenRefresh, PasswordChange, PasswordReset, PasswordResetConfirm,
-    AccountStatus, UserRole
+    AccountStatus, UserRole, UserProfileRead
 )
 
 # 設定
@@ -29,11 +29,17 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 30
 
-# パスワードハッシュ
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# パスワードハッシュ（bcrypt 4.x対応）
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto",
+    bcrypt__default_rounds=12,
+    bcrypt__min_rounds=10,
+    bcrypt__max_rounds=15
+)
 
 # 開発環境用の認証スルー設定
-DEV_AUTH_BYPASS = os.getenv("DEV_AUTH_BYPASS", "false").lower() == "true"
+DEV_AUTH_BYPASS = False  # 認証スルー機能を無効化
 DEV_USER_ID = int(os.getenv("DEV_USER_ID", "1"))
 
 
@@ -44,12 +50,36 @@ class AuthService:
         self.db = db
     
     def create_password_hash(self, password: str) -> str:
-        """パスワードハッシュ作成"""
-        return pwd_context.hash(password)
+        """パスワードハッシュ作成（bcrypt 4.x対応）"""
+        try:
+            # パスワードが72バイトを超える場合は事前にSHA256でハッシュ化
+            if len(password.encode('utf-8')) > 72:
+                password_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
+                return pwd_context.hash(password_hash)
+            else:
+                return pwd_context.hash(password)
+        except Exception as e:
+            print(f"パスワードハッシュ化エラー: {e}")
+            # フォールバック: SHA256でハッシュ化
+            password_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
+            return pwd_context.hash(password_hash)
     
     def verify_password(self, plain_password: str, hashed_password: str) -> bool:
-        """パスワード検証"""
-        return pwd_context.verify(plain_password, hashed_password)
+        """パスワード検証（bcrypt 4.x対応）"""
+        try:
+            # 直接検証を試行
+            if pwd_context.verify(plain_password, hashed_password):
+                return True
+            
+            # 72バイトを超えるパスワードの場合はSHA256ハッシュで検証
+            if len(plain_password.encode('utf-8')) > 72:
+                password_hash = hashlib.sha256(plain_password.encode('utf-8')).hexdigest()
+                return pwd_context.verify(password_hash, hashed_password)
+            
+            return False
+        except Exception as e:
+            print(f"パスワード検証エラー: {e}")
+            return False
     
     def create_access_token(self, data: dict, expires_delta: Optional[timedelta] = None) -> str:
         """アクセストークン作成"""
@@ -81,6 +111,10 @@ class AuthService:
     
     def register_user(self, user_data: UserRegister) -> AuthResponse:
         """ユーザー登録"""
+        # 開発環境での認証スルー
+        if DEV_AUTH_BYPASS:
+            return self._dev_auth_bypass()
+        
         # メールアドレス重複チェック
         existing_user = self.db.exec(select(Account).where(Account.email == user_data.email)).first()
         if existing_user:
