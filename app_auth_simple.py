@@ -10,6 +10,10 @@ from sqlmodel import Session, create_engine, SQLModel
 from contextlib import asynccontextmanager
 from typing import Optional
 import json
+from pydantic import BaseModel
+from datetime import datetime, timezone
+import hashlib
+import secrets
 
 # データベース設定
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
@@ -18,6 +22,28 @@ engine = create_engine(DATABASE_URL, echo=True)
 # 開発環境用の認証スルー設定
 DEV_AUTH_BYPASS = False  # 認証スルー機能を無効化
 DEV_USER_ID = int(os.getenv("DEV_USER_ID", "1"))
+
+# 認証用のデータモデル
+class UserRegister(BaseModel):
+    email: str
+    password: str
+    nickname: str
+    first_name: str
+    last_name: str
+    primary_condition: str
+    language: str = "en-US"
+    country: str = "US"
+    timezone: str = "UTC"
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
+    remember_me: bool = False
+
+class AuthResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    user: dict
 
 def get_db() -> Session:
     """データベースセッション取得"""
@@ -183,6 +209,73 @@ async def get_current_user():
         }
     else:
         return {"message": "Authentication required"}
+
+@app.post("/auth/register", response_model=AuthResponse)
+async def register_user(user_data: UserRegister, db: Session = Depends(get_db)):
+    """ユーザー登録"""
+    try:
+        # 簡単なパスワードハッシュ（実際の実装ではbcryptを使用）
+        password_hash = hashlib.sha256(user_data.password.encode()).hexdigest()
+        
+        # アクセストークンとリフレッシュトークンを生成
+        access_token = secrets.token_urlsafe(32)
+        refresh_token = secrets.token_urlsafe(32)
+        
+        # ユーザー情報を作成
+        user_info = {
+            "id": 1,  # 実際の実装ではデータベースから取得
+            "email": user_data.email,
+            "nickname": user_data.nickname,
+            "first_name": user_data.first_name,
+            "last_name": user_data.last_name,
+            "primary_condition": user_data.primary_condition,
+            "language": user_data.language,
+            "country": user_data.country,
+            "timezone": user_data.timezone,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        return AuthResponse(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            user=user_info
+        )
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/auth/login", response_model=AuthResponse)
+async def login_user(login_data: UserLogin, db: Session = Depends(get_db)):
+    """ユーザーログイン"""
+    try:
+        # 簡単な認証（実際の実装ではデータベースで認証）
+        if login_data.email and login_data.password:
+            # アクセストークンとリフレッシュトークンを生成
+            access_token = secrets.token_urlsafe(32)
+            refresh_token = secrets.token_urlsafe(32)
+            
+            # ユーザー情報を作成
+            user_info = {
+                "id": 1,
+                "email": login_data.email,
+                "nickname": "User",
+                "first_name": "Test",
+                "last_name": "User",
+                "primary_condition": "Test Condition",
+                "language": "en-US",
+                "country": "US",
+                "timezone": "UTC",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            
+            return AuthResponse(
+                access_token=access_token,
+                refresh_token=refresh_token,
+                user=user_info
+            )
+        else:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
