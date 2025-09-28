@@ -1,17 +1,14 @@
-/** @type {import('next').NextConfig} */
-const withNextIntl = require('next-intl/plugin')(
-  './src/i18n.ts'
-);
+const createNextIntlPlugin = require('next-intl/plugin')
 
+const withNextIntl = createNextIntlPlugin()
+
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
-  },
   images: {
     domains: ['localhost', '127.0.0.1'],
   },
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001',
   },
   async rewrites() {
     return [
@@ -41,6 +38,13 @@ const nextConfig = {
         ],
       },
     ];
+  },
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': require('path').resolve(__dirname, 'src'),
+    };
+    return config;
   },
 };
 

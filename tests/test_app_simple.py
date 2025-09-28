@@ -5,6 +5,7 @@ Tests the basic FastAPI application endpoints and functionality.
 
 import pytest
 from fastapi.testclient import TestClient
+from datetime import datetime, timezone
 from app_simple import app, posts_storage, post_id_counter
 
 # Test client
@@ -67,6 +68,13 @@ class TestPostEndpoints:
         assert data["group_id"] == 1
         assert data["id"] == 1
         assert "created_at" in data
+        
+        # Test that created_at is a valid ISO format timestamp
+        created_at = data["created_at"]
+        assert isinstance(created_at, str)
+        # Parse the timestamp to ensure it's valid
+        parsed_time = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+        assert isinstance(parsed_time, datetime)
     
     def test_create_post_validation(self):
         """Test post creation with invalid data."""
@@ -280,6 +288,94 @@ class TestEdgeCases:
         
         data = response.json()
         assert data["group_id"] == -1
+
+
+class TestTimestampFunctionality:
+    """Test timestamp-related functionality."""
+    
+    def setup_method(self):
+        """Reset posts storage before each test."""
+        global posts_storage, post_id_counter
+        posts_storage.clear()
+        import app_simple
+        app_simple.post_id_counter = 1
+    
+    def test_timestamp_is_current(self):
+        """Test that created_at timestamp is current."""
+        before_creation = datetime.now(timezone.utc)
+        
+        post_data = {
+            "title": "Timestamp Test",
+            "content": "Testing timestamp accuracy",
+            "group_id": 1
+        }
+        
+        response = client.post("/api/posts", json=post_data)
+        assert response.status_code == 200
+        
+        after_creation = datetime.now(timezone.utc)
+        
+        data = response.json()
+        created_at_str = data["created_at"]
+        created_at = datetime.fromisoformat(created_at_str.replace('Z', '+00:00'))
+        
+        # The timestamp should be between before and after creation
+        assert before_creation <= created_at <= after_creation
+    
+    def test_timestamp_format(self):
+        """Test that timestamp is in correct ISO format."""
+        post_data = {
+            "title": "Format Test",
+            "content": "Testing timestamp format",
+            "group_id": 1
+        }
+        
+        response = client.post("/api/posts", json=post_data)
+        assert response.status_code == 200
+        
+        data = response.json()
+        created_at = data["created_at"]
+        
+        # Should be in ISO format with timezone
+        assert created_at.endswith('+00:00') or created_at.endswith('Z')
+        assert 'T' in created_at  # ISO format has T between date and time
+    
+    def test_multiple_posts_different_timestamps(self):
+        """Test that multiple posts have different timestamps."""
+        import time
+        
+        # Create first post
+        post1_data = {
+            "title": "First Post",
+            "content": "First post content",
+            "group_id": 1
+        }
+        response1 = client.post("/api/posts", json=post1_data)
+        assert response1.status_code == 200
+        
+        # Wait a small amount to ensure different timestamps
+        time.sleep(0.01)
+        
+        # Create second post
+        post2_data = {
+            "title": "Second Post",
+            "content": "Second post content",
+            "group_id": 1
+        }
+        response2 = client.post("/api/posts", json=post2_data)
+        assert response2.status_code == 200
+        
+        # Check that timestamps are different
+        data1 = response1.json()
+        data2 = response2.json()
+        
+        assert data1["created_at"] != data2["created_at"]
+        
+        # Parse timestamps and verify order
+        timestamp1 = datetime.fromisoformat(data1["created_at"].replace('Z', '+00:00'))
+        timestamp2 = datetime.fromisoformat(data2["created_at"].replace('Z', '+00:00'))
+        
+        assert timestamp1 < timestamp2
 
 
 if __name__ == "__main__":

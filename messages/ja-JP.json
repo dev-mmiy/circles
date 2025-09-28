@@ -1,0 +1,77 @@
+{
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラー",
+    "success": "成功",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "delete": "削除",
+    "edit": "編集",
+    "create": "作成",
+    "refresh": "更新",
+    "back": "戻る",
+    "next": "次へ",
+    "previous": "前へ",
+    "search": "検索",
+    "filter": "フィルタ",
+    "sort": "並び替え",
+    "close": "閉じる",
+    "open": "開く",
+    "submit": "送信",
+    "reset": "リセット",
+    "confirm": "確認",
+    "yes": "はい",
+    "no": "いいえ"
+  },
+  "navigation": {
+    "home": "ホーム",
+    "posts": "投稿",
+    "community": "コミュニティ",
+    "profile": "プロフィール",
+    "settings": "設定",
+    "help": "ヘルプ",
+    "about": "について"
+  },
+  "header": {
+    "title": "ヘルスケアコミュニティ",
+    "subtitle": "重篤な疾患を持つ人々をサポート",
+    "newPost": "新しい投稿",
+    "refreshPosts": "投稿を更新"
+  },
+  "posts": {
+    "title": "コミュニティ投稿",
+    "noPosts": "投稿が見つかりません",
+    "createFirst": "最初の投稿を作成",
+    "tryAgain": "再試行",
+    "postedOn": "{date}に投稿",
+    "createNew": "新しい投稿を作成",
+    "shareThoughts": "あなたの考えを共有し、コミュニティの他のメンバーとつながりましょう。",
+    "form": {
+      "title": "タイトル",
+      "titlePlaceholder": "投稿のタイトルを入力",
+      "content": "内容",
+      "contentPlaceholder": "あなたの考えを共有してください...",
+      "creating": "作成中...",
+      "createPost": "投稿を作成"
+    }
+  },
+  "api": {
+    "status": "API接続状態",
+    "loading": "APIから投稿を読み込み中...",
+    "connected": "APIに正常に接続しました",
+    "foundPosts": "{count}件の投稿が見つかりました",
+    "error": "APIから投稿の読み込みに失敗しました",
+    "errorHint": "バックエンドAPIがポート8001で実行されていることを確認してください",
+    "createError": "投稿の作成に失敗しました"
+  },
+  "welcome": {
+    "title": "ヘルスケアコミュニティへようこそ",
+    "subtitle": "重篤な疾患を持つ人々をサポートするプラットフォーム"
+  },
+  "footer": {
+    "copyright": "© 2024 ヘルスケアコミュニティ. 全著作権所有.",
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約",
+    "contact": "お問い合わせ"
+  }
+}

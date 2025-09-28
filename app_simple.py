@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 import os
+from datetime import datetime, timezone
 
 # Create FastAPI app
 app = FastAPI(
@@ -67,12 +68,16 @@ async def create_post(post: PostCreate):
     """Create a new post."""
     global post_id_counter
     
+    # 現在の日時をUTCで取得
+    current_time = datetime.now(timezone.utc)
+    created_at_str = current_time.isoformat()
+    
     new_post = {
         "id": post_id_counter,
         "title": post.title,
         "content": post.content,
         "group_id": post.group_id,
-        "created_at": "2024-01-01T00:00:00Z"
+        "created_at": created_at_str
     }
     
     posts_storage.append(new_post)

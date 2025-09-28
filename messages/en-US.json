@@ -1,0 +1,144 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "refresh": "Refresh",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "close": "Close",
+    "open": "Open",
+    "submit": "Submit",
+    "reset": "Reset",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "navigation": {
+    "home": "Home",
+    "posts": "Posts",
+    "community": "Community",
+    "profile": "Profile",
+    "settings": "Settings",
+    "help": "Help",
+    "about": "About"
+  },
+  "header": {
+    "title": "Healthcare Community",
+    "subtitle": "Supporting people with serious illnesses",
+    "newPost": "New Post",
+    "refreshPosts": "Refresh Posts"
+  },
+  "posts": {
+    "title": "Community Posts",
+    "noPosts": "No posts found",
+    "createFirst": "Create First Post",
+    "tryAgain": "Try Again",
+    "postedOn": "Posted on {date}",
+    "createNew": "Create New Post",
+    "shareThoughts": "Share your thoughts and connect with others in the community.",
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "Enter post title",
+      "content": "Content",
+      "contentPlaceholder": "Share your thoughts...",
+      "creating": "Creating...",
+      "createPost": "Create Post"
+    }
+  },
+  "api": {
+    "status": "API Connection Status",
+    "loading": "Loading posts from API...",
+    "connected": "Successfully connected to API",
+    "foundPosts": "Found {count} posts",
+    "error": "Failed to load posts from API",
+    "errorHint": "Make sure the backend API is running on port 8001",
+    "createError": "Failed to create post"
+  },
+  "welcome": {
+    "title": "Welcome to Healthcare Community",
+    "subtitle": "A platform for supporting people with serious illnesses"
+  },
+  "footer": {
+    "copyright": "© 2024 Healthcare Community. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "contact": "Contact Us"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "description": "Sign in to your account to access the community",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "rememberMe": "Remember me",
+      "submit": "Sign In",
+      "forgotPassword": "Forgot your password?",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Sign up here"
+    },
+    "register": {
+      "title": "Create Account",
+      "description": "Join our community to connect with others facing similar challenges",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Enter your first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Enter your last name",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "nickname": "Nickname",
+      "nicknamePlaceholder": "Choose a nickname",
+      "primaryCondition": "Primary Condition",
+      "primaryConditionPlaceholder": "Enter your primary medical condition",
+      "password": "Password",
+      "passwordPlaceholder": "Create a password",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "passwordMismatch": "Passwords do not match",
+      "submit": "Create Account",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Sign in here"
+    },
+    "profile": {
+      "title": "Profile",
+      "edit": "Edit Profile",
+      "save": "Save Changes",
+      "cancel": "Cancel",
+      "personalInfo": "Personal Information",
+      "medicalInfo": "Medical Information",
+      "privacySettings": "Privacy Settings",
+      "accessibilitySettings": "Accessibility Settings"
+    },
+    "logout": {
+      "title": "Sign Out",
+      "confirm": "Are you sure you want to sign out?",
+      "submit": "Sign Out"
+    },
+    "external": {
+      "title": "Sign in with External Services",
+      "description": "Choose your preferred authentication method",
+      "signInWith": "Sign in with {provider}",
+      "connecting": "Connecting...",
+      "or": "Or continue with email and password",
+      "linkAccount": "Link External Account",
+      "unlinkAccount": "Unlink External Account",
+      "linkedAccounts": "Linked Accounts",
+      "noLinkedAccounts": "No external accounts linked",
+      "linkSuccess": "External account linked successfully",
+      "unlinkSuccess": "External account unlinked successfully",
+      "linkError": "Failed to link external account",
+      "unlinkError": "Failed to unlink external account"
+    }
+  }
+}

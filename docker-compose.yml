@@ -74,12 +74,12 @@ services:
       retries: 3
     restart: unless-stopped
 
-  # Frontend
-  frontend:
+  # Frontend (Production)
+  frontend-prod:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: healthcare_frontend
+    container_name: healthcare_frontend_prod
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8000
       - NEXT_PUBLIC_APP_NAME=Healthcare Community Platform
@@ -152,6 +152,25 @@ services:
     depends_on:
       - postgres
       - redis
+    networks:
+      - healthcare_network
+
+  # Frontend Development
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.dev
+    container_name: healthcare_frontend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8001
+      - NODE_ENV=development
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - dev-backend
     networks:
       - healthcare_network
 
