@@ -12,7 +12,7 @@ from typing import Optional
 from auth_models import (
     UserRegister, UserLogin, UserProfileUpdate, AuthResponse,
     TokenRefresh, PasswordChange, PasswordReset, PasswordResetConfirm,
-    UserProfileRead, UserProfile
+    UserProfileRead
 )
 from auth_service import AuthService
 from sqlmodel import Session, create_engine
@@ -50,11 +50,10 @@ def get_current_user(
 @auth_router.post("/register", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
 async def register_user(
     user_data: UserRegister,
-    db: Session = Depends(get_db)
+    auth_service: AuthService = Depends(get_auth_service)
 ):
     """ユーザー登録"""
     try:
-        auth_service = get_auth_service(db)
         return auth_service.register_user(user_data)
     except HTTPException:
         raise
@@ -68,11 +67,10 @@ async def register_user(
 @auth_router.post("/login", response_model=AuthResponse)
 async def login_user(
     login_data: UserLogin,
-    db: Session = Depends(get_db)
+    auth_service: AuthService = Depends(get_auth_service)
 ):
     """ユーザーログイン"""
     try:
-        auth_service = get_auth_service(db)
         return auth_service.login_user(login_data)
     except HTTPException:
         raise
@@ -86,11 +84,10 @@ async def login_user(
 @auth_router.post("/refresh", response_model=AuthResponse)
 async def refresh_token(
     refresh_data: TokenRefresh,
-    db: Session = Depends(get_db)
+    auth_service: AuthService = Depends(get_auth_service)
 ):
     """トークンリフレッシュ"""
     try:
-        auth_service = get_auth_service(db)
         return auth_service.refresh_token(refresh_data)
     except HTTPException:
         raise
@@ -104,11 +101,10 @@ async def refresh_token(
 @auth_router.post("/logout")
 async def logout_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: Session = Depends(get_db)
+    auth_service: AuthService = Depends(get_auth_service)
 ):
     """ユーザーログアウト"""
     try:
-        auth_service = get_auth_service(db)
         success = auth_service.logout_user(credentials.credentials)
         if success:
             return {"message": "Logout successful"}
@@ -161,7 +157,7 @@ async def get_current_user_profile(
 async def update_user_profile(
     profile_data: UserProfileUpdate,
     current_user: Optional[UserProfile] = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    auth_service: AuthService = Depends(get_auth_service)
 ):
     """ユーザープロフィール更新"""
     if not current_user:
@@ -171,7 +167,6 @@ async def update_user_profile(
         )
     
     try:
-        auth_service = get_auth_service(db)
         return auth_service.update_user_profile(current_user.account_id, profile_data)
     except HTTPException:
         raise
@@ -186,7 +181,7 @@ async def update_user_profile(
 async def change_password(
     password_data: PasswordChange,
     current_user: Optional[UserProfile] = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    auth_service: AuthService = Depends(get_auth_service)
 ):
     """パスワード変更"""
     if not current_user:
@@ -202,7 +197,7 @@ async def change_password(
 @auth_router.post("/reset-password")
 async def request_password_reset(
     reset_data: PasswordReset,
-    db: Session = Depends(get_db)
+    auth_service: AuthService = Depends(get_auth_service)
 ):
     """パスワードリセット要求"""
     # TODO: パスワードリセットロジックを実装
@@ -212,7 +207,7 @@ async def request_password_reset(
 @auth_router.post("/reset-password/confirm")
 async def confirm_password_reset(
     confirm_data: PasswordResetConfirm,
-    db: Session = Depends(get_db)
+    auth_service: AuthService = Depends(get_auth_service)
 ):
     """パスワードリセット確認"""
     # TODO: パスワードリセット確認ロジックを実装
@@ -230,6 +225,6 @@ async def auth_health_check():
             "login": True,
             "token_refresh": True,
             "profile_management": True,
-            "dev_bypass": False  # 認証スルー機能を無効化
+            "dev_bypass": os.getenv("DEV_AUTH_BYPASS", "false").lower() == "true"
         }
     }

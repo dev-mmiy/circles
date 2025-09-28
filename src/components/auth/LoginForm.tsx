@@ -1,141 +1,176 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { useAuth } from '../../contexts/AuthContext';
-import { LoginRequest } from '../../services/authService';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 
 interface LoginFormProps {
   onSuccess?: () => void;
-  onSwitchToRegister?: () => void;
 }
 
-export default function LoginForm({ onSuccess, onSwitchToRegister }: LoginFormProps) {
-  const t = useTranslations('auth.login');
-  const { login, isLoading } = useAuth();
-  const [formData, setFormData] = useState<LoginRequest>({
+export default function LoginForm({ onSuccess }: LoginFormProps) {
+  const t = useTranslations('auth');
+  const router = useRouter();
+  
+  const [formData, setFormData] = useState({
     email: '',
     password: '',
-    remember_me: false,
+    rememberMe: false
   });
-  const [error, setError] = useState<string>('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     setError('');
 
     try {
-      await login(formData);
-      onSuccess?.();
-    } catch (error) {
-      setError(t('loginError'));
-      console.error('Login error:', error);
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          remember_me: formData.rememberMe
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Login failed');
+      }
+
+      const data = await response.json();
+      
+      // トークンをローカルストレージに保存
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('refresh_token', data.refresh_token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      // 成功時の処理
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push('/dashboard');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-          {t('title')}
-        </h2>
-        <p className="text-gray-600 text-center mb-6">
-          {t('description')}
-        </p>
-
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader>
+        <CardTitle>{t('login.title')}</CardTitle>
+        <CardDescription>{t('login.description')}</CardDescription>
+      </CardHeader>
+      <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              {error}
-            </div>
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           )}
-
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              {t('email')}
-            </label>
-            <input
-              type="email"
+          
+          <div className="space-y-2">
+            <Label htmlFor="email">{t('login.email')}</Label>
+            <Input
               id="email"
               name="email"
+              type="email"
               value={formData.email}
-              onChange={handleChange}
-              placeholder={t('emailPlaceholder')}
+              onChange={handleInputChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder={t('login.emailPlaceholder')}
+              disabled={isLoading}
             />
           </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              {t('password')}
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder={t('passwordPlaceholder')}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          
+          <div className="space-y-2">
+            <Label htmlFor="password">{t('login.password')}</Label>
+            <div className="relative">
+              <Input
+                id="password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+                placeholder={t('login.passwordPlaceholder')}
+                disabled={isLoading}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                onClick={() => setShowPassword(!showPassword)}
+                disabled={isLoading}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="rememberMe"
+              name="rememberMe"
+              checked={formData.rememberMe}
+              onCheckedChange={(checked) => 
+                setFormData(prev => ({ ...prev, rememberMe: checked as boolean }))
+              }
+              disabled={isLoading}
             />
+            <Label htmlFor="rememberMe" className="text-sm">
+              {t('login.rememberMe')}
+            </Label>
           </div>
-
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="remember_me"
-              name="remember_me"
-              checked={formData.remember_me}
-              onChange={handleChange}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-            />
-            <label htmlFor="remember_me" className="ml-2 block text-sm text-gray-700">
-              {t('rememberMe')}
-            </label>
-          </div>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? t('loading') : t('submit')}
-          </button>
-
-          <div className="text-center">
-            <button
-              type="button"
-              onClick={() => window.location.href = '/forgot-password'}
-              className="text-sm text-blue-600 hover:text-blue-800"
-            >
-              {t('forgotPassword')}
-            </button>
-          </div>
+          
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {t('login.submit')}
+          </Button>
         </form>
-
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            {t('noAccount')}{' '}
-            <button
-              type="button"
-              onClick={onSwitchToRegister}
-              className="text-blue-600 hover:text-blue-800 font-medium"
-            >
-              {t('registerLink')}
-            </button>
-          </p>
+        
+        <div className="mt-4 text-center text-sm">
+          <a href="/auth/forgot-password" className="text-blue-600 hover:underline">
+            {t('login.forgotPassword')}
+          </a>
         </div>
-      </div>
-    </div>
+        
+        <div className="mt-4 text-center text-sm">
+          {t('login.noAccount')}{' '}
+          <a href="/auth/register" className="text-blue-600 hover:underline">
+            {t('login.registerLink')}
+          </a>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

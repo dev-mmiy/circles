@@ -1,234 +1,254 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { useAuth } from '../../contexts/AuthContext';
-import { RegisterRequest } from '../../services/authService';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 
 interface RegisterFormProps {
   onSuccess?: () => void;
-  onSwitchToLogin?: () => void;
 }
 
-export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFormProps) {
-  const t = useTranslations('auth.register');
-  const { register, isLoading } = useAuth();
-  const [formData, setFormData] = useState<RegisterRequest>({
+export default function RegisterForm({ onSuccess }: RegisterFormProps) {
+  const t = useTranslations('auth');
+  const router = useRouter();
+  
+  const [formData, setFormData] = useState({
     email: '',
     password: '',
     confirmPassword: '',
     nickname: '',
-    first_name: '',
-    last_name: '',
-    primary_condition: '',
-    privacy_level: 'private',
-    share_medical_info: false,
-    timezone: 'UTC',
+    firstName: '',
+    lastName: '',
+    primaryCondition: '',
     language: 'en-US',
     country: 'US',
+    timezone: 'UTC'
   });
-  const [error, setError] = useState<string>('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     setError('');
 
     // パスワード確認
     if (formData.password !== formData.confirmPassword) {
-      setError(t('passwordMismatch'));
-      return;
-    }
-
-    // パスワード強度チェック
-    if (formData.password.length < 8) {
-      setError(t('passwordMinLength'));
+      setError(t('register.passwordMismatch'));
+      setIsLoading(false);
       return;
     }
 
     try {
-      // confirmPasswordを除外してAPIに送信
-      const { confirmPassword, ...registerData } = formData;
-      await register(registerData);
-      onSuccess?.();
-    } catch (error) {
-      setError(t('registerError'));
-      console.error('Registration error:', error);
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          nickname: formData.nickname,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          primary_condition: formData.primaryCondition,
+          language: formData.language,
+          country: formData.country,
+          timezone: formData.timezone
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Registration failed');
+      }
+
+      const data = await response.json();
+      
+      // トークンをローカルストレージに保存
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('refresh_token', data.refresh_token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      // 成功時の処理
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push('/dashboard');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Registration failed');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type, checked } = e.target as HTMLInputElement;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: value
     }));
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-          {t('title')}
-        </h2>
-        <p className="text-gray-600 text-center mb-6">
-          {t('description')}
-        </p>
-
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader>
+        <CardTitle>{t('register.title')}</CardTitle>
+        <CardDescription>{t('register.description')}</CardDescription>
+      </CardHeader>
+      <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              {error}
-            </div>
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           )}
-
+          
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-1">
-                {t('firstName')}
-              </label>
-              <input
-                type="text"
-                id="first_name"
-                name="first_name"
-                value={formData.first_name}
-                onChange={handleChange}
-                placeholder={t('firstNamePlaceholder')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            <div className="space-y-2">
+              <Label htmlFor="firstName">{t('register.firstName')}</Label>
+              <Input
+                id="firstName"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleInputChange}
+                placeholder={t('register.firstNamePlaceholder')}
+                disabled={isLoading}
               />
             </div>
-            <div>
-              <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-1">
-                {t('lastName')}
-              </label>
-              <input
-                type="text"
-                id="last_name"
-                name="last_name"
-                value={formData.last_name}
-                onChange={handleChange}
-                placeholder={t('lastNamePlaceholder')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            <div className="space-y-2">
+              <Label htmlFor="lastName">{t('register.lastName')}</Label>
+              <Input
+                id="lastName"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleInputChange}
+                placeholder={t('register.lastNamePlaceholder')}
+                disabled={isLoading}
               />
             </div>
           </div>
-
-          <div>
-            <label htmlFor="nickname" className="block text-sm font-medium text-gray-700 mb-1">
-              {t('nickname')} *
-            </label>
-            <input
-              type="text"
+          
+          <div className="space-y-2">
+            <Label htmlFor="email">{t('register.email')}</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              required
+              placeholder={t('register.emailPlaceholder')}
+              disabled={isLoading}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="nickname">{t('register.nickname')}</Label>
+            <Input
               id="nickname"
               name="nickname"
               value={formData.nickname}
-              onChange={handleChange}
-              placeholder={t('nicknamePlaceholder')}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              onChange={handleInputChange}
+              placeholder={t('register.nicknamePlaceholder')}
+              disabled={isLoading}
             />
           </div>
-
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              {t('email')} *
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder={t('emailPlaceholder')}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          
+          <div className="space-y-2">
+            <Label htmlFor="primaryCondition">{t('register.primaryCondition')}</Label>
+            <Input
+              id="primaryCondition"
+              name="primaryCondition"
+              value={formData.primaryCondition}
+              onChange={handleInputChange}
+              placeholder={t('register.primaryConditionPlaceholder')}
+              disabled={isLoading}
             />
           </div>
-
-          <div>
-            <label htmlFor="primary_condition" className="block text-sm font-medium text-gray-700 mb-1">
-              {t('primaryCondition')}
-            </label>
-            <input
-              type="text"
-              id="primary_condition"
-              name="primary_condition"
-              value={formData.primary_condition}
-              onChange={handleChange}
-              placeholder={t('primaryConditionPlaceholder')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
+          
+          <div className="space-y-2">
+            <Label htmlFor="password">{t('register.password')}</Label>
+            <div className="relative">
+              <Input
+                id="password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+                placeholder={t('register.passwordPlaceholder')}
+                disabled={isLoading}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                onClick={() => setShowPassword(!showPassword)}
+                disabled={isLoading}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
           </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              {t('password')} *
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder={t('passwordPlaceholder')}
-              required
-              minLength={8}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            <p className="text-xs text-gray-500 mt-1">{t('passwordMinLength')}</p>
+          
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">{t('register.confirmPassword')}</Label>
+            <div className="relative">
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
+                required
+                placeholder={t('register.confirmPasswordPlaceholder')}
+                disabled={isLoading}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                disabled={isLoading}
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
           </div>
-
-          <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-              {t('confirmPassword')} *
-            </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder={t('confirmPasswordPlaceholder')}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="share_medical_info"
-              name="share_medical_info"
-              checked={formData.share_medical_info}
-              onChange={handleChange}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-            />
-            <label htmlFor="share_medical_info" className="ml-2 block text-sm text-gray-700">
-              {t('shareMedicalInfo')}
-            </label>
-          </div>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? t('loading') : t('submit')}
-          </button>
+          
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {t('register.submit')}
+          </Button>
         </form>
-
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            {t('haveAccount')}{' '}
-            <button
-              type="button"
-              onClick={onSwitchToLogin}
-              className="text-blue-600 hover:text-blue-800 font-medium"
-            >
-              {t('loginLink')}
-            </button>
-          </p>
+        
+        <div className="mt-4 text-center text-sm">
+          {t('register.haveAccount')}{' '}
+          <a href="/auth/login" className="text-blue-600 hover:underline">
+            {t('register.loginLink')}
+          </a>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

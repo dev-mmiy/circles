@@ -73,49 +73,5 @@
     "privacy": "Politique de Confidentialité",
     "terms": "Conditions d'Utilisation",
     "contact": "Nous Contacter"
-  },
-  "auth": {
-    "login": {
-      "title": "Se Connecter",
-      "description": "Connectez-vous à votre compte pour accéder à la communauté",
-      "email": "Email",
-      "emailPlaceholder": "Entrez votre email",
-      "password": "Mot de passe",
-      "passwordPlaceholder": "Entrez votre mot de passe",
-      "rememberMe": "Se souvenir de moi",
-      "submit": "Se Connecter",
-      "loading": "Connexion en cours...",
-      "forgotPassword": "Mot de passe oublié ?",
-      "noAccount": "Vous n'avez pas de compte ?",
-      "registerLink": "Inscrivez-vous ici",
-      "loginError": "Échec de la connexion. Veuillez vérifier votre email et mot de passe."
-    },
-    "register": {
-      "title": "Créer un Compte",
-      "description": "Rejoignez notre communauté pour vous connecter avec d'autres personnes confrontées à des défis similaires",
-      "firstName": "Prénom",
-      "firstNamePlaceholder": "Entrez votre prénom",
-      "lastName": "Nom",
-      "lastNamePlaceholder": "Entrez votre nom",
-      "email": "Email",
-      "emailPlaceholder": "Entrez votre email",
-      "nickname": "Pseudonyme",
-      "nicknamePlaceholder": "Choisissez un pseudonyme",
-      "primaryCondition": "Condition Principale",
-      "primaryConditionPlaceholder": "Entrez votre condition médicale principale",
-      "password": "Mot de passe",
-      "passwordPlaceholder": "Créez un mot de passe",
-      "confirmPassword": "Confirmer le Mot de Passe",
-      "confirmPasswordPlaceholder": "Confirmez votre mot de passe",
-      "passwordMismatch": "Les mots de passe ne correspondent pas",
-      "passwordMinLength": "Veuillez entrer au moins 8 caractères",
-      "shareMedicalInfo": "J'accepte de partager des informations médicales",
-      "loading": "Création du compte...",
-      "registerError": "Échec de l'inscription. Veuillez vérifier vos informations.",
-      "submit": "Créer un Compte",
-      "haveAccount": "Vous avez déjà un compte ?",
-      "loginLink": "Connectez-vous ici"
-    }
   }
 }
-
