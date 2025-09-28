@@ -1,0 +1,96 @@
+version: '3.3'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: healthcare_postgres_auth
+    environment:
+      POSTGRES_DB: healthcare_db
+      POSTGRES_USER: healthcare_user
+      POSTGRES_PASSWORD: healthcare_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - healthcare_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U healthcare_user -d healthcare_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: healthcare_redis_auth
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - healthcare_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Authentication Backend API
+  auth-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: healthcare_auth_backend
+    environment:
+      - DATABASE_URL=postgresql://healthcare_user:healthcare_password@postgres:5432/healthcare_db
+      - REDIS_URL=redis://redis:6379
+      - DEV_AUTH_BYPASS=true
+      - DEV_USER_ID=1
+      - SECRET_KEY=dev-secret-key-change-in-production
+      - DEBUG=true
+      - LOG_LEVEL=debug
+    volumes:
+      - .:/app
+      - ./logs:/app/logs
+    ports:
+      - "8001:8000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - healthcare_network
+    command: ["python", "app_auth_simple.py"]
+
+  # Frontend Development
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.dev
+    container_name: healthcare_frontend_auth
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8001
+      - NODE_ENV=development
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - auth-backend
+    networks:
+      - healthcare_network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  healthcare_network:
+    driver: bridge

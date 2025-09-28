@@ -1,0 +1,77 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "refresh": "Actualiser",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "sort": "Trier",
+    "close": "Fermer",
+    "open": "Ouvrir",
+    "submit": "Soumettre",
+    "reset": "Réinitialiser",
+    "confirm": "Confirmer",
+    "yes": "Oui",
+    "no": "Non"
+  },
+  "navigation": {
+    "home": "Accueil",
+    "posts": "Publications",
+    "community": "Communauté",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "help": "Aide",
+    "about": "À propos"
+  },
+  "header": {
+    "title": "Communauté de Santé",
+    "subtitle": "Soutenir les personnes atteintes de maladies graves",
+    "newPost": "Nouvelle Publication",
+    "refreshPosts": "Actualiser les Publications"
+  },
+  "posts": {
+    "title": "Publications de la Communauté",
+    "noPosts": "Aucune publication trouvée",
+    "createFirst": "Créer la Première Publication",
+    "tryAgain": "Réessayer",
+    "postedOn": "Publié le {date}",
+    "createNew": "Créer une Nouvelle Publication",
+    "shareThoughts": "Partagez vos pensées et connectez-vous avec d'autres membres de la communauté.",
+    "form": {
+      "title": "Titre",
+      "titlePlaceholder": "Entrez le titre de la publication",
+      "content": "Contenu",
+      "contentPlaceholder": "Partagez vos pensées...",
+      "creating": "Création en cours...",
+      "createPost": "Créer la Publication"
+    }
+  },
+  "api": {
+    "status": "État de Connexion API",
+    "loading": "Chargement des publications depuis l'API...",
+    "connected": "Connexion à l'API réussie",
+    "foundPosts": "{count} publications trouvées",
+    "error": "Échec du chargement des publications depuis l'API",
+    "errorHint": "Assurez-vous que l'API backend fonctionne sur le port 8001",
+    "createError": "Échec de la création de la publication"
+  },
+  "welcome": {
+    "title": "Bienvenue dans la Communauté de Santé",
+    "subtitle": "Une plateforme pour soutenir les personnes atteintes de maladies graves"
+  },
+  "footer": {
+    "copyright": "© 2024 Communauté de Santé. Tous droits réservés.",
+    "privacy": "Politique de Confidentialité",
+    "terms": "Conditions d'Utilisation",
+    "contact": "Nous Contacter"
+  }
+}

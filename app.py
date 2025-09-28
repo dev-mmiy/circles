@@ -17,21 +17,29 @@ Run locally:
 Install deps (example):
   pip install fastapi==0.111.0 uvicorn[standard]==0.30.1 sqlmodel==0.0.21 pydantic==2.*
 """
-from __future__ import annotations
+# from __future__ import annotations
 
 from datetime import datetime, date
 from enum import Enum
+
 from typing import List, Optional
+from sqlmodel import SQLModel, Field as SQLField, Relationship, create_engine, Session, select
 
 from fastapi import FastAPI, HTTPException, Depends, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from sqlmodel import SQLModel, Field as SQLField, Relationship, create_engine, Session, select
+
+# Set ORIGINS
+import os
+ALLOWED_ORIGINS = os.getenv("CORS_ORIGINS", "http://127.0.0.1:3000,http://localhost:3000").split(",")
+# app.add_middleware(...) の allow_origins に ALLOWED_ORIGINS を指定
+
 
 # ----------------------------------------------------------------------------
 # Database setup
 # ----------------------------------------------------------------------------
 DATABASE_URL = "sqlite:///./app.db"
+
 engine = create_engine(DATABASE_URL, echo=False, connect_args={"check_same_thread": False})
 
 
@@ -48,6 +56,9 @@ class JournalSymptom(SQLModel, table=True):
     journal_id: int = SQLField(foreign_key="journal.id")
     name: str
     score: int = SQLField(ge=0, le=10)
+    
+    # 追加: リレーションをクラス内で宣言（前方参照）
+    journal: Optional["Journal"] = Relationship(back_populates="symptoms")
 
 
 class Journal(SQLModel, table=True):
@@ -59,10 +70,13 @@ class Journal(SQLModel, table=True):
     diastolic_bp: Optional[int] = SQLField(default=None, ge=0)
     mood: Optional[int] = SQLField(default=None, ge=0, le=10)
 
-    symptoms: List[JournalSymptom] = Relationship(back_populates="journal")
+    # 変更: 型を List["JournalSymptom"] に（前方参照）
+    # symptoms: List[JournalSymptom] = Relationship(back_populates="journal")
+    symptoms: List["JournalSymptom"] = Relationship(back_populates="journal")
 
 
-JournalSymptom.journal = Relationship(back_populates="symptoms", sa_relationship_kwargs={"lazy": "joined"})
+
+# JournalSymptom.journal = Relationship(back_populates="symptoms", sa_relationship_kwargs={"lazy": "joined"})
 
 
 class Medication(SQLModel, table=True):
@@ -71,7 +85,9 @@ class Medication(SQLModel, table=True):
     dosage: Optional[str] = None  # e.g., "5 mg"
     schedule: Optional[str] = None  # free text for stub (e.g., "8:00, 20:00 daily")
 
-    logs: List[MedicationLog] = Relationship(back_populates="medication")
+    # logs: List[MedicationLog] = Relationship(back_populates="medication")
+    # 変更
+    logs: List["MedicationLog"] = Relationship(back_populates="medication")
 
 
 class MedicationLog(SQLModel, table=True):
@@ -80,8 +96,10 @@ class MedicationLog(SQLModel, table=True):
     taken_at: datetime = SQLField(default_factory=datetime.utcnow, index=True)
     status: str = SQLField(default="taken")  # taken / missed / delayed (free text for stub)
 
+    # 追加
+    medication: Optional["Medication"] = Relationship(back_populates="logs")
 
-MedicationLog.medication = Relationship(back_populates="logs")
+# MedicationLog.medication = Relationship(back_populates="logs")
 
 
 class GroupVisibility(str, Enum):
@@ -95,7 +113,9 @@ class Group(SQLModel, table=True):
     description: Optional[str] = None
     visibility: GroupVisibility = SQLField(default=GroupVisibility.public)
 
-    posts: List[Post] = Relationship(back_populates="group")
+    # posts: List[Post] = Relationship(back_populates="group")
+    # 変更
+    posts: List["Post"] = Relationship(back_populates="group")
 
 
 class Post(SQLModel, table=True):
@@ -106,7 +126,9 @@ class Post(SQLModel, table=True):
     body: str
     anon: bool = SQLField(default=True)
 
-    group: Optional[Group] = Relationship(back_populates="posts")
+    # group: Optional[Group] = Relationship(back_populates="posts")
+    # 変更
+    group: Optional["Group"] = Relationship(back_populates="posts")
 
 
 class ReportTargetType(str, Enum):
@@ -255,7 +277,7 @@ app = FastAPI(title="Rare Community Dev Stub (no-auth)")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost", "http://127.0.0.1", "http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -499,3 +521,12 @@ def dev_seed(session: Session = Depends(get_session)):
     session.commit()
     session.refresh(g)
     return {"group_id": g.id}
+
+
+
+# Redirect to /docs
+from fastapi.responses import RedirectResponse
+
+@app.get("/")
+def root():
+    return RedirectResponse(url="/docs")

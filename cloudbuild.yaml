@@ -1,0 +1,85 @@
+# Cloud Build設定ファイル
+# GCP Cloud Buildを使用してアプリケーションをビルド・デプロイ
+
+steps:
+  # 1. バックエンドのビルド
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/healthcare-backend:$COMMIT_SHA', '-f', 'Dockerfile', '.']
+    dir: '.'
+
+  # 2. フロントエンドのビルド
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/healthcare-frontend:$COMMIT_SHA', '-f', 'Dockerfile', '.']
+    dir: '.'
+
+  # 3. イメージをContainer Registryにプッシュ
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/healthcare-backend:$COMMIT_SHA']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/healthcare-frontend:$COMMIT_SHA']
+
+  # 4. Cloud Runにデプロイ
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'healthcare-backend'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/healthcare-backend:$COMMIT_SHA'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--memory'
+      - '1Gi'
+      - '--cpu'
+      - '1'
+      - '--max-instances'
+      - '10'
+      - '--min-instances'
+      - '0'
+      - '--set-env-vars'
+      - 'DATABASE_URL=${_DATABASE_URL},REDIS_URL=${_REDIS_URL},SECRET_KEY=${_SECRET_KEY},OPENAI_API_KEY=${_OPENAI_API_KEY}'
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'healthcare-frontend'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/healthcare-frontend:$COMMIT_SHA'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--memory'
+      - '512Mi'
+      - '--cpu'
+      - '0.5'
+      - '--max-instances'
+      - '5'
+      - '--min-instances'
+      - '0'
+      - '--set-env-vars'
+      - 'NEXT_PUBLIC_API_URL=${_NEXT_PUBLIC_API_URL}'
+
+# 置換変数
+substitutions:
+  _DATABASE_URL: 'postgresql://username:password@/database_name?host=/cloudsql/project-id:region:instance-name'
+  _REDIS_URL: 'redis://memorystore-ip:6379'
+  _SECRET_KEY: 'your-secret-key-here'
+  _OPENAI_API_KEY: 'your-openai-api-key-here'
+  _NEXT_PUBLIC_API_URL: 'https://healthcare-backend-xxxxx-uc.a.run.app'
+
+# タイムアウト設定
+timeout: '1200s'
+
+# オプション
+options:
+  machineType: 'E2_HIGHCPU_8'
+  diskSizeGb: 100

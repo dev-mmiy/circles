@@ -1,0 +1,26 @@
+# Database migration requirements
+alembic==1.13.1
+# sqlalchemy and sqlmodel versions should match main requirements
+# sqlalchemy==2.0.25  # Commented out to avoid conflicts
+# sqlmodel==0.0.21    # Commented out to avoid conflicts
+# pydantic==2.5.3     # Commented out to avoid conflicts
+
+# Internationalization support
+pytz==2023.3
+babel==2.13.1
+python-dateutil==2.8.2
+
+# Database drivers
+psycopg2-binary==2.9.9  # PostgreSQL
+pymysql==1.1.0          # MySQL
+# sqlite3 is built-in to Python, no need to install
+
+# Development tools (only for dev environment)
+# pytest==7.4.4
+# pytest-asyncio==0.21.1
+# black==23.12.1
+# isort==5.13.2
+# flake8==6.1.0
+
+# Logging
+structlog==23.2.0

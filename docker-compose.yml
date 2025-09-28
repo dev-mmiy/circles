@@ -1,0 +1,208 @@
+version: '3.3'
+
+services:
+  # PostgreSQL Database (Local development only - use Cloud SQL in production)
+  postgres:
+    image: pgvector/pgvector:pg15
+    container_name: healthcare_postgres
+    environment:
+      POSTGRES_DB: healthcare_db
+      POSTGRES_USER: healthcare_user
+      POSTGRES_PASSWORD: healthcare_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - healthcare_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U healthcare_user -d healthcare_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache (Local development only - use Cloud Memorystore in production)
+  redis:
+    image: redis:7-alpine
+    container_name: healthcare_redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - healthcare_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: healthcare_backend
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgresql://healthcare_user:healthcare_password@postgres:5432/healthcare_db}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
+      - DEBUG=${DEBUG:-false}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
+      - GCP_BUCKET_NAME=${GCP_BUCKET_NAME}
+      - GCP_SERVICE_ACCOUNT_KEY=${GCP_SERVICE_ACCOUNT_KEY}
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./backups:/app/backups
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - healthcare_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Frontend (Production)
+  frontend-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: healthcare_frontend_prod
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_APP_NAME=Healthcare Community Platform
+      - NODE_ENV=production
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - healthcare_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy (commented out - nginx.conf not available)
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: healthcare_nginx
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf
+  #     - ./ssl:/etc/nginx/ssl
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   depends_on:
+  #     - backend
+  #     - frontend
+  #   networks:
+  #     - healthcare_network
+  #   restart: unless-stopped
+
+  # Database Migration
+  migration:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: healthcare_migration
+    environment:
+      - DATABASE_URL=postgresql://healthcare_user:healthcare_password@postgres:5432/healthcare_db
+    volumes:
+      - .:/app
+    command: ["python", "migrate.py", "setup"]
+    depends_on:
+      - postgres
+    networks:
+      - healthcare_network
+
+  # Development Environment
+  dev-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: healthcare_dev_backend
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgresql://healthcare_user:healthcare_password@postgres:5432/healthcare_db}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - DEBUG=true
+      - LOG_LEVEL=debug
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
+      - GCP_BUCKET_NAME=${GCP_BUCKET_NAME}
+      - GCP_SERVICE_ACCOUNT_KEY=${GCP_SERVICE_ACCOUNT_KEY}
+    volumes:
+      - .:/app
+      - ./logs:/app/logs
+    ports:
+      - "8001:8000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - healthcare_network
+
+  # Frontend Development
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.dev
+    container_name: healthcare_frontend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8001
+      - NODE_ENV=development
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - dev-backend
+    networks:
+      - healthcare_network
+
+  # Monitoring (commented out - monitoring config not available)
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: healthcare_prometheus
+  #   volumes:
+  #     - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+  #   ports:
+  #     - "9090:9090"
+  #   networks:
+  #     - healthcare_network
+
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: healthcare_grafana
+  #   environment:
+  #     - GF_SECURITY_ADMIN_PASSWORD=admin
+  #   volumes:
+  #     - grafana_data:/var/lib/grafana
+  #   ports:
+  #     - "3001:3000"
+  #   networks:
+  #     - healthcare_network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  healthcare_network:
+    driver: bridge
