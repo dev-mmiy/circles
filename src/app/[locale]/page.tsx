@@ -41,7 +41,7 @@ export default function HomePage() {
   const loadPosts = async () => {
     try {
       setLoading(true)
-      const response = await fetch('http://localhost:8001/api/posts')
+      const response = await fetch('http://localhost:8001/posts')
       if (!response.ok) {
         throw new Error('Failed to load posts')
       }
@@ -60,7 +60,7 @@ export default function HomePage() {
     e.preventDefault()
     try {
       setCreating(true)
-      const response = await fetch('http://localhost:8001/api/posts', {
+      const response = await fetch('http://localhost:8001/posts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -136,6 +136,18 @@ export default function HomePage() {
                 </button>
               </div>
               
+              <button 
+                onClick={() => router.push(`/${locale}/auth/login`)}
+                className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+              >
+                ログイン
+              </button>
+              <button 
+                onClick={() => router.push(`/${locale}/auth/register`)}
+                className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700"
+              >
+                登録
+              </button>
               <button 
                 onClick={() => setShowCreateForm(!showCreateForm)}
                 className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
