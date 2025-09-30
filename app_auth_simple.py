@@ -15,6 +15,10 @@ from datetime import datetime, timezone
 import hashlib
 import secrets
 
+# 拡張プロファイル管理のインポート
+from user_profile_endpoints import router as user_profile_router
+from user_profile_models import *
+
 # データベース設定
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
 engine = create_engine(DATABASE_URL, echo=True)
@@ -69,6 +73,12 @@ async def lifespan(app: FastAPI):
     # データベーステーブル作成
     SQLModel.metadata.create_all(engine)
     
+    # 拡張プロファイルテーブルも作成（手動でテーブルが作成済みのためスキップ）
+    # from user_profile_models import UserProfileExtended, BodyMeasurement, VitalSign
+    # UserProfileExtended.metadata.create_all(engine)
+    # BodyMeasurement.metadata.create_all(engine)
+    # VitalSign.metadata.create_all(engine)
+    
     yield
     
     # シャットダウン時
@@ -95,6 +105,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ルーターの登録
+app.include_router(user_profile_router)
 
 # 簡易投稿データ
 posts_db = []

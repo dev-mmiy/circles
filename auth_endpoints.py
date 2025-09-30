@@ -12,7 +12,7 @@ from typing import Optional
 from auth_models import (
     UserRegister, UserLogin, UserProfileUpdate, AuthResponse,
     TokenRefresh, PasswordChange, PasswordReset, PasswordResetConfirm,
-    UserProfileRead
+    UserProfileRead, UserProfile
 )
 from auth_service import AuthService
 from sqlmodel import Session, create_engine

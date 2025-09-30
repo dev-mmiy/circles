@@ -1,0 +1,5 @@
+---
+alwaysApply: true
+---
+datetime in DB should be stored as UTC time
+datetime on fronend is described as market format and a target timezone time

@@ -18,29 +18,137 @@ export default function ProfilePage() {
     primary_condition: '',
     language: 'ja-JP',
     country: 'JP',
-    timezone: 'Asia/Tokyo'
+    timezone: 'Asia/Tokyo',
+    // 新しく追加する健康関連属性
+    birth_date: '',
+    gender: '',
+    blood_type: '',
+    region: '',
+    height_cm: '',
+    target_weight_kg: '',
+    target_body_fat_percentage: '',
+    activity_level: '',
+    medical_conditions: '',
+    medications: '',
+    allergies: '',
+    emergency_contact_name: '',
+    emergency_contact_phone: '',
+    doctor_name: '',
+    doctor_phone: '',
+    insurance_number: ''
   })
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
 
   useEffect(() => {
-    // ローカルストレージからユーザー情報を取得
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      const userData = JSON.parse(storedUser)
-      setUser(userData)
-      setFormData({
-        email: userData.email || '',
-        nickname: userData.nickname || '',
-        first_name: userData.first_name || '',
-        last_name: userData.last_name || '',
-        primary_condition: userData.primary_condition || '',
-        language: userData.language || 'ja-JP',
-        country: userData.country || 'JP',
-        timezone: userData.timezone || 'Asia/Tokyo'
-      })
+    const loadProfile = async () => {
+      try {
+        // ローカルストレージからユーザー情報を取得
+        const storedUser = localStorage.getItem('user')
+        if (!storedUser) {
+          router.push('/ja-JP/auth/login')
+          return
+        }
+        
+        const user = JSON.parse(storedUser)
+        const userId = user.id
+        
+        // APIからプロファイルデータを取得
+        const response = await fetch(`http://localhost:8003/extended/${userId}`)
+        if (response.ok) {
+          const result = await response.json()
+          if (result.status === 'success') {
+            const profileData = result.data
+            const userData = {
+              email: profileData.email || 'user@example.com', // APIから取得したメールアドレスを使用
+              nickname: profileData.nickname || 'ユーザー',
+              first_name: profileData.first_name || '',
+              last_name: profileData.last_name || '',
+              primary_condition: profileData.primary_condition || '',
+              language: 'ja-JP',
+              country: 'JP',
+              timezone: 'Asia/Tokyo',
+              // APIから取得したデータ
+              ...profileData
+            }
+            setUser(userData)
+            setFormData({
+              email: userData.email || '',
+              nickname: userData.nickname || '',
+              first_name: userData.first_name || '',
+              last_name: userData.last_name || '',
+              primary_condition: userData.primary_condition || '',
+              language: userData.language || 'ja-JP',
+              country: userData.country || 'JP',
+              timezone: userData.timezone || 'Asia/Tokyo',
+              // 新しく追加する健康関連属性
+              birth_date: userData.birth_date || '',
+              gender: userData.gender || '',
+              blood_type: userData.blood_type || '',
+              region: userData.region || '',
+              height_cm: userData.height_cm || '',
+              target_weight_kg: userData.target_weight_kg || '',
+              target_body_fat_percentage: userData.target_body_fat_percentage || '',
+              activity_level: userData.activity_level || '',
+              medical_conditions: userData.medical_conditions || '',
+              medications: userData.medications || '',
+              allergies: userData.allergies || '',
+              emergency_contact_name: userData.emergency_contact_name || '',
+              emergency_contact_phone: userData.emergency_contact_phone || '',
+              doctor_name: userData.doctor_name || '',
+              doctor_phone: userData.doctor_phone || '',
+              insurance_number: userData.insurance_number || ''
+            })
+          }
+        } else {
+          // フォールバック: ローカルストレージから取得
+          const storedUser = localStorage.getItem('user')
+          if (storedUser) {
+            const userData = JSON.parse(storedUser)
+            setUser(userData)
+            setFormData({
+              email: userData.email || '',
+              nickname: userData.nickname || '',
+              first_name: userData.first_name || '',
+              last_name: userData.last_name || '',
+              primary_condition: userData.primary_condition || '',
+              language: userData.language || 'ja-JP',
+              country: userData.country || 'JP',
+              timezone: userData.timezone || 'Asia/Tokyo',
+              // 新しく追加する健康関連属性
+              birth_date: userData.birth_date || '',
+              gender: userData.gender || '',
+              blood_type: userData.blood_type || '',
+              region: userData.region || '',
+              height_cm: userData.height_cm || '',
+              target_weight_kg: userData.target_weight_kg || '',
+              target_body_fat_percentage: userData.target_body_fat_percentage || '',
+              activity_level: userData.activity_level || '',
+              medical_conditions: userData.medical_conditions || '',
+              medications: userData.medications || '',
+              allergies: userData.allergies || '',
+              emergency_contact_name: userData.emergency_contact_name || '',
+              emergency_contact_phone: userData.emergency_contact_phone || '',
+              doctor_name: userData.doctor_name || '',
+              doctor_phone: userData.doctor_phone || '',
+              insurance_number: userData.insurance_number || ''
+            })
+          }
+        }
+      } catch (error) {
+        console.error('プロファイル読み込みエラー:', error)
+        // エラー時はローカルストレージから取得
+        const storedUser = localStorage.getItem('user')
+        if (storedUser) {
+          const userData = JSON.parse(storedUser)
+          setUser(userData)
+        }
+      } finally {
+        setLoading(false)
+      }
     }
-    setLoading(false)
+    
+    loadProfile()
   }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -56,12 +164,21 @@ export default function ProfilePage() {
     setMessage('')
     
     try {
+      // ローカルストレージからユーザー情報を取得
+      const storedUser = localStorage.getItem('user')
+      if (!storedUser) {
+        router.push('/ja-JP/auth/login')
+        return
+      }
+      
+      const user = JSON.parse(storedUser)
+      const userId = user.id
+      
       // APIにプロフィール更新リクエストを送信
-      const response = await fetch('http://localhost:8001/auth/profile', {
+      const response = await fetch(`http://localhost:8003/extended/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         },
         body: JSON.stringify(formData)
       })
@@ -342,13 +459,300 @@ export default function ProfilePage() {
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="Asia/Tokyo">Asia/Tokyo</option>
-                    <option value="America/New_York">America/New_York</option>
-                    <option value="Europe/Paris">Europe/Paris</option>
+                    <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
+                    <option value="America/New_York">America/New_York (EST/EDT)</option>
+                    <option value="America/Los_Angeles">America/Los_Angeles (PST/PDT)</option>
+                    <option value="Europe/London">Europe/London (GMT/BST)</option>
+                    <option value="Europe/Paris">Europe/Paris (CET/CEST)</option>
+                    <option value="Asia/Shanghai">Asia/Shanghai (CST)</option>
+                    <option value="Asia/Seoul">Asia/Seoul (KST)</option>
+                    <option value="Australia/Sydney">Australia/Sydney (AEST/AEDT)</option>
+                    <option value="UTC">UTC</option>
                   </select>
                 ) : (
                   <p className="text-sm text-gray-900">{user.timezone || 'Asia/Tokyo'}</p>
                 )}
+              </div>
+            </div>
+
+            {/* 基本属性セクション */}
+            <div className="border-t border-gray-200 pt-6">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">{t('profile.basicAttributes')}</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t('profile.birthDate')}
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="date"
+                      name="birth_date"
+                      value={formData.birth_date}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-900">{user.birth_date || '未設定'}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t('profile.gender')}
+                  </label>
+                  {isEditing ? (
+                    <select
+                      name="gender"
+                      value={formData.gender}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">{t('profile.selectOption')}</option>
+                      <option value="male">{t('profile.male')}</option>
+                      <option value="female">{t('profile.female')}</option>
+                      <option value="other">{t('profile.other')}</option>
+                    </select>
+                  ) : (
+                    <p className="text-sm text-gray-900">
+                      {formData.gender === 'male' ? t('profile.male') : 
+                       formData.gender === 'female' ? t('profile.female') : 
+                       formData.gender === 'other' ? t('profile.other') : t('profile.notSet')}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t('profile.bloodType')}
+                  </label>
+                  {isEditing ? (
+                    <select
+                      name="blood_type"
+                      value={formData.blood_type}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">{t('profile.selectOption')}</option>
+                      <option value="A">A型</option>
+                      <option value="B">B型</option>
+                      <option value="AB">AB型</option>
+                      <option value="O">O型</option>
+                      <option value="unknown">不明</option>
+                    </select>
+                  ) : (
+                    <p className="text-sm text-gray-900">
+                      {formData.blood_type ? `${formData.blood_type}型` : t('profile.notSet')}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* 健康情報セクション */}
+            <div className="border-t border-gray-200 pt-6">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">{t('profile.healthInfo')}</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t('profile.height')} (cm)
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="number"
+                      name="height_cm"
+                      value={formData.height_cm}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder={t('profile.enterHeight')}
+                      step="0.1"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-900">{user.height_cm ? `${user.height_cm} cm` : t('profile.notSet')}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t('profile.targetWeight')} (kg)
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="number"
+                      name="target_weight_kg"
+                      value={formData.target_weight_kg}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder={t('profile.enterTargetWeight')}
+                      step="0.1"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-900">{user.target_weight_kg ? `${user.target_weight_kg} kg` : t('profile.notSet')}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t('profile.activityLevel')}
+                  </label>
+                  {isEditing ? (
+                    <select
+                      name="activity_level"
+                      value={formData.activity_level}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">{t('profile.selectOption')}</option>
+                      <option value="low">{t('profile.low')}</option>
+                      <option value="moderate">{t('profile.moderate')}</option>
+                      <option value="high">{t('profile.high')}</option>
+                    </select>
+                  ) : (
+                    <p className="text-sm text-gray-900">
+                      {formData.activity_level === 'low' ? t('profile.low') : 
+                       formData.activity_level === 'moderate' ? t('profile.moderate') : 
+                       formData.activity_level === 'high' ? t('profile.high') : t('profile.notSet')}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* 医療情報セクション */}
+            <div className="border-t border-gray-200 pt-6">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">{t('profile.medicalInfo')}</h4>
+              <div className="grid grid-cols-1 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t('profile.medicalConditions')}
+                  </label>
+                  {isEditing ? (
+                    <textarea
+                      name="medical_conditions"
+                      value={formData.medical_conditions}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      rows={3}
+                      placeholder={t('profile.enterMedicalConditions')}
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-900">{user.medical_conditions || t('profile.notSet')}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    服用薬
+                  </label>
+                  {isEditing ? (
+                    <textarea
+                      name="medications"
+                      value={formData.medications}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      rows={3}
+                      placeholder="現在服用している薬があれば入力してください"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-900">{user.medications || '未設定'}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    アレルギー
+                  </label>
+                  {isEditing ? (
+                    <textarea
+                      name="allergies"
+                      value={formData.allergies}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      rows={3}
+                      placeholder="アレルギーがあれば入力してください"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-900">{user.allergies || '未設定'}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* 緊急連絡先セクション */}
+            <div className="border-t border-gray-200 pt-6">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">{t('profile.emergencyContact')}</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    緊急連絡先氏名
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="emergency_contact_name"
+                      value={formData.emergency_contact_name}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="緊急連絡先の氏名"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-900">{user.emergency_contact_name || '未設定'}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    緊急連絡先電話番号
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="tel"
+                      name="emergency_contact_phone"
+                      value={formData.emergency_contact_phone}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="緊急連絡先の電話番号"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-900">{user.emergency_contact_phone || '未設定'}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    主治医氏名
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="doctor_name"
+                      value={formData.doctor_name}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="主治医の氏名"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-900">{user.doctor_name || '未設定'}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    主治医電話番号
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="tel"
+                      name="doctor_phone"
+                      value={formData.doctor_phone}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="主治医の電話番号"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-900">{user.doctor_phone || '未設定'}</p>
+                  )}
+                </div>
               </div>
             </div>
 

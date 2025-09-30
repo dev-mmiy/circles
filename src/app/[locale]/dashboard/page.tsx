@@ -123,7 +123,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">栄養管理</h3>
             <p className="text-gray-600 mb-4">食事の記録と栄養分析</p>
@@ -152,6 +152,44 @@ export default function DashboardPage() {
             >
               プロフィールを編集
             </button>
+          </div>
+        </div>
+
+        {/* Health Data Management */}
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">健康データ管理</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex items-center mb-4">
+                <div className="h-8 w-8 bg-orange-100 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-orange-600">⚖️</span>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">体重・体脂肪率</h3>
+              </div>
+              <p className="text-gray-600 mb-4">体重と体脂肪率の記録・管理</p>
+              <button 
+                onClick={() => router.push('/ja-JP/health/body-measurements')}
+                className="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700"
+              >
+                体重管理を開始
+              </button>
+            </div>
+            
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex items-center mb-4">
+                <div className="h-8 w-8 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-red-600">❤️</span>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">バイタルサイン</h3>
+              </div>
+              <p className="text-gray-600 mb-4">血圧・心拍数・体温の記録・管理</p>
+              <button 
+                onClick={() => router.push('/ja-JP/health/vital-signs')}
+                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+              >
+                バイタル管理を開始
+              </button>
+            </div>
           </div>
         </div>
       </main>

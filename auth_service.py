@@ -141,7 +141,7 @@ class AuthService:
             refresh_token=refresh_token,
             expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
             user=UserProfileRead(
-                account_id=profile.account_id,
+                account_id=account.id,
                 nickname=profile.nickname,
                 first_name=profile.first_name,
                 last_name=profile.last_name,
@@ -232,7 +232,7 @@ class AuthService:
             refresh_token=refresh_token,
             expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
             user=UserProfileRead(
-                account_id=profile.account_id,
+                account_id=account.id,
                 nickname=profile.nickname,
                 first_name=profile.first_name,
                 last_name=profile.last_name,
@@ -319,7 +319,7 @@ class AuthService:
             refresh_token=new_refresh_token,
             expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
             user=UserProfileRead(
-                account_id=profile.account_id,
+                account_id=account.id,
                 nickname=profile.nickname,
                 first_name=profile.first_name,
                 last_name=profile.last_name,
@@ -367,7 +367,7 @@ class AuthService:
             share_medical_info=False
         )
     
-    def update_user_profile(self, user_id: int, profile_data: UserProfileUpdate) -> UserProfileRead:
+    def update_user_profile(self, user_id: int, profile_data: UserProfileUpdate) -> UserProfile:
         """ユーザープロフィール更新"""
         profile = self.db.exec(select(UserProfile).where(UserProfile.account_id == user_id)).first()
         if not profile:
@@ -394,7 +394,7 @@ class AuthService:
         self.db.refresh(profile)
         
         return UserProfileRead(
-            account_id=profile.account_id,
+            account_id=account.id,
             nickname=profile.nickname,
             first_name=profile.first_name,
             last_name=profile.last_name,

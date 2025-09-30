@@ -29,7 +29,6 @@ class AccountStatus(str, Enum):
 class Account(SQLModel, table=True):
     """アカウント基本情報"""
     __tablename__ = "account"
-    __table_args__ = {"schema": "core"}
 
     id: int = Field(primary_key=True)
     email: str = Field(unique=True, index=True, max_length=255)
@@ -50,9 +49,8 @@ class Account(SQLModel, table=True):
 class UserProfile(SQLModel, table=True):
     """ユーザープロフィール（疾患情報含む）"""
     __tablename__ = "user_profile"
-    __table_args__ = {"schema": "core"}
 
-    account_id: int = Field(foreign_key="core.account.id", primary_key=True)
+    account_id: int = Field(foreign_key="account.id", primary_key=True)
     nickname: Optional[str] = Field(max_length=100)
     first_name: Optional[str] = Field(max_length=100)
     last_name: Optional[str] = Field(max_length=100)
@@ -86,12 +84,11 @@ class UserProfile(SQLModel, table=True):
 class UserRoleAssignment(SQLModel, table=True):
     """ユーザーロール管理"""
     __tablename__ = "user_role"
-    __table_args__ = {"schema": "core"}
 
     id: int = Field(primary_key=True)
-    account_id: int = Field(foreign_key="core.account.id")
+    account_id: int = Field(foreign_key="account.id")
     role: str = Field()  # Changed from UserRole enum to str
-    granted_by: Optional[int] = Field(foreign_key="core.account.id")
+    granted_by: Optional[int] = Field(foreign_key="account.id")
     granted_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     expires_at: Optional[datetime] = None
 
@@ -102,10 +99,9 @@ class UserRoleAssignment(SQLModel, table=True):
 class UserSession(SQLModel, table=True):
     """ユーザーセッション管理"""
     __tablename__ = "user_session"
-    __table_args__ = {"schema": "core"}
 
     id: str = Field(primary_key=True, default_factory=lambda: str(uuid.uuid4()))
-    account_id: int = Field(foreign_key="core.account.id")
+    account_id: int = Field(foreign_key="account.id")
     session_token: str = Field(unique=True, index=True)
     refresh_token: str = Field(unique=True, index=True)
     device_info: Optional[str] = Field(default=None)  # JSON文字列
@@ -123,10 +119,9 @@ class UserSession(SQLModel, table=True):
 class MFAConfig(SQLModel, table=True):
     """多要素認証設定"""
     __tablename__ = "mfa_config"
-    __table_args__ = {"schema": "core"}
 
     id: int = Field(primary_key=True)
-    account_id: int = Field(foreign_key="core.account.id", unique=True)
+    account_id: int = Field(foreign_key="account.id", unique=True)
     mfa_enabled: bool = Field(default=False)
     mfa_method: Optional[str] = Field(max_length=20)  # sms, email, totp
     mfa_secret: Optional[str] = Field(max_length=255)

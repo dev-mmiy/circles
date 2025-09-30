@@ -64,7 +64,7 @@ services:
       - redis
     networks:
       - healthcare_network
-    command: ["python", "app_auth_simple.py"]
+    command: ["python", "app_auth_simple_new.py"]
 
   # Frontend Development
   frontend:

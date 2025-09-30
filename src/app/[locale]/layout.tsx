@@ -14,3 +14,5 @@ export default function LocaleLayout({ children, params: { locale } }: LocaleLay
 
   return <>{children}</>
 }
+
+

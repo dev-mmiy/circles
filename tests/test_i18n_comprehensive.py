@@ -431,3 +431,5 @@ class TestTranslationCoverage:
         critical_hardcoded = [s for s in hardcoded_strings if any(word in s.lower() for word in ["login", "register", "profile", "home", "posts", "community"])]
         assert len(critical_hardcoded) == 0, f"重要なハードコードされた文字列が見つかりました: {critical_hardcoded}"
 
+
+

@@ -402,3 +402,5 @@ class TestAuthAPIEndpoints:
         data = response.json()
         assert data["status"] == "ok"
 
+
+
