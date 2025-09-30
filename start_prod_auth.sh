@@ -21,3 +21,4 @@ echo "🚀 認証システム起動中..."
 python app_auth.py
 
 
+
